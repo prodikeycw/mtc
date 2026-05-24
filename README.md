@@ -18,7 +18,7 @@ Transcribe video and audio from local files or URLs (Facebook, YouTube, X, etc.)
 ## Quick Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mtc.git
+git clone https://github.com/prodikeycw/mtc.git
 cd mtc
 ./install.sh
 ```
@@ -144,7 +144,7 @@ Download from: https://huggingface.co/ggerganov/whisper.cpp
 ## Install on Another Mac
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mtc.git
+git clone https://github.com/prodikeycw/mtc.git
 cd mtc
 ./install.sh
 ```
@@ -177,7 +177,7 @@ MIT — free for personal use.
 ## 快速安装
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mtc.git
+git clone https://github.com/prodikeycw/mtc.git
 cd mtc
 ./install.sh
 ```
@@ -303,7 +303,7 @@ WEBVTT
 ## 在另一台 Mac 上安装
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mtc.git
+git clone https://github.com/prodikeycw/mtc.git
 cd mtc
 ./install.sh
 ```
