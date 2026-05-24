@@ -30,20 +30,83 @@ The installer will:
 
 ## Usage
 
-### Transcribe a local file
+### Example 1 — Transcribe a Facebook video (auto-detect language)
 
 ```bash
-./mtc.sh video.mp4
-./mtc.sh recording.m4a en
+./mtc.sh 'https://www.facebook.com/watch/?v=1234567890'
 ```
 
-### Transcribe from a URL
+Terminal output:
+```
+🌐 Downloading from URL...
+🎬 Processing: My Facebook Video.mp4
+🔄 Converting to audio...
+✍️  Transcribing (this may take a few minutes)...
+
+✅ Done!
+   📄 My Facebook Video.wav.txt  — plain text transcript
+   📄 My Facebook Video.wav.vtt  — transcript with timestamps
+```
+
+---
+
+### Example 2 — Transcribe a YouTube video in Chinese
 
 ```bash
-./mtc.sh 'https://www.facebook.com/...'
-./mtc.sh 'https://www.youtube.com/watch?v=...' zh
-./mtc.sh 'https://x.com/...' auto
+./mtc.sh 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' zh
 ```
+
+---
+
+### Example 3 — Transcribe an X (Twitter) video in English
+
+```bash
+./mtc.sh 'https://x.com/username/status/1234567890' en
+```
+
+---
+
+### Example 4 — Transcribe a local MP4 file
+
+```bash
+./mtc.sh ~/Downloads/meeting-recording.mp4 en
+```
+
+---
+
+### Example 5 — Transcribe a local audio file (podcast, voice memo)
+
+```bash
+./mtc.sh ~/Desktop/podcast-episode.m4a
+./mtc.sh ~/Desktop/voice-memo.mp3 zh
+```
+
+---
+
+### Example 6 — What the output files look like
+
+**`meeting-recording.wav.txt`** (plain text):
+```
+Hello everyone, welcome to today's meeting.
+Let's start with a quick update on the project status.
+We have completed the first phase and are now moving into testing.
+```
+
+**`meeting-recording.wav.vtt`** (with timestamps):
+```
+WEBVTT
+
+00:00:00.000 --> 00:00:03.500
+Hello everyone, welcome to today's meeting.
+
+00:00:03.500 --> 00:00:07.200
+Let's start with a quick update on the project status.
+
+00:00:07.200 --> 00:00:11.800
+We have completed the first phase and are now moving into testing.
+```
+
+---
 
 ### Language options
 
@@ -126,20 +189,83 @@ cd mtc
 
 ## 使用方法
 
-### 转录本地文件
+### 示例 1 — 转录 Facebook 视频（自动检测语言）
 
 ```bash
-./mtc.sh video.mp4
-./mtc.sh recording.m4a en
+./mtc.sh 'https://www.facebook.com/watch/?v=1234567890'
 ```
 
-### 转录网络链接
+终端输出：
+```
+🌐 Downloading from URL...
+🎬 Processing: My Facebook Video.mp4
+🔄 Converting to audio...
+✍️  Transcribing (this may take a few minutes)...
+
+✅ Done!
+   📄 My Facebook Video.wav.txt  — 纯文字转录内容
+   📄 My Facebook Video.wav.vtt  — 带时间戳字幕文件
+```
+
+---
+
+### 示例 2 — 转录 YouTube 视频（中文）
 
 ```bash
-./mtc.sh 'https://www.facebook.com/...'
-./mtc.sh 'https://www.youtube.com/watch?v=...' zh
-./mtc.sh 'https://x.com/...' auto
+./mtc.sh 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' zh
 ```
+
+---
+
+### 示例 3 — 转录 X（Twitter）视频（英文）
+
+```bash
+./mtc.sh 'https://x.com/username/status/1234567890' en
+```
+
+---
+
+### 示例 4 — 转录本地 MP4 文件
+
+```bash
+./mtc.sh ~/Downloads/会议录像.mp4 zh
+```
+
+---
+
+### 示例 5 — 转录本地音频（播客、备忘录）
+
+```bash
+./mtc.sh ~/Desktop/podcast-episode.m4a
+./mtc.sh ~/Desktop/语音备忘录.mp3 zh
+```
+
+---
+
+### 示例 6 — 输出文件内容示例
+
+**`会议录像.wav.txt`**（纯文字）：
+```
+大家好，欢迎参加今天的会议。
+我们先来做一个项目进度的快速更新。
+第一阶段已经完成，目前正在进入测试阶段。
+```
+
+**`会议录像.wav.vtt`**（带时间戳）：
+```
+WEBVTT
+
+00:00:00.000 --> 00:00:03.500
+大家好，欢迎参加今天的会议。
+
+00:00:03.500 --> 00:00:07.200
+我们先来做一个项目进度的快速更新。
+
+00:00:07.200 --> 00:00:11.800
+第一阶段已经完成，目前正在进入测试阶段。
+```
+
+---
 
 ### 语言选项
 
