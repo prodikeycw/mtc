@@ -39,11 +39,53 @@ if [ ! -f "$MODEL" ]; then
     exit 1
 fi
 
+# ── Detect URL type ──────────────────────────────────────────────────────────
+
+is_wechat_url() {
+    [[ "$1" =~ weixin\.qq\.com|channels\.weixin\.qq\.com|v\.weixin\.qq\.com ]]
+}
+
 # ── Download if URL ──────────────────────────────────────────────────────────
 
 if [[ "$INPUT" =~ ^https?:// ]]; then
-    echo "🌐 Downloading from URL..."
-    yt-dlp --no-playlist -o "%(title)s.%(ext)s" "$INPUT"
+
+    if is_wechat_url "$INPUT"; then
+        echo "💬 WeChat Channels URL detected — trying browser cookie method..."
+        echo ""
+
+        # Try each installed browser's cookies
+        WECHAT_SUCCESS=false
+        for BROWSER in chrome firefox safari edge; do
+            if yt-dlp --no-playlist \
+                      --cookies-from-browser "$BROWSER" \
+                      -o "%(title)s.%(ext)s" \
+                      "$INPUT" 2>/dev/null; then
+                WECHAT_SUCCESS=true
+                break
+            fi
+        done
+
+        if [ "$WECHAT_SUCCESS" = false ]; then
+            echo ""
+            echo "❌ Could not download WeChat Channels video."
+            echo ""
+            echo "   WeChat videos are login-protected. Try one of these:"
+            echo ""
+            echo "   Option 1 — Screen record while playing in WeChat desktop app:"
+            echo "     ./mtc.sh ~/Desktop/screen-recording.mp4 zh"
+            echo ""
+            echo "   Option 2 — Download inside WeChat app (if download button available),"
+            echo "     then run: ./mtc.sh ~/Downloads/video.mp4 zh"
+            echo ""
+            echo "   Option 3 — Make sure you are logged into WeChat in Chrome/Safari,"
+            echo "     then try again."
+            exit 1
+        fi
+    else
+        echo "🌐 Downloading from URL..."
+        yt-dlp --no-playlist -o "%(title)s.%(ext)s" "$INPUT"
+    fi
+
     # Pick the most recently downloaded media file
     VIDEO_FILE=$(ls -t *.mp4 *.mkv *.webm *.m4a *.mp3 2>/dev/null | head -1)
     if [ -z "$VIDEO_FILE" ]; then
