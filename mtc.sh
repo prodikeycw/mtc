@@ -18,6 +18,7 @@ set -e
 INPUT="$1"
 LANGUAGE="${2:-auto}"
 MODEL="$HOME/whisper-models/ggml-medium.bin"
+SOURCE="$INPUT"   # original URL or local path, used in the Markdown header
 
 # ── Validation ──────────────────────────────────────────────────────────────
 
@@ -49,6 +50,18 @@ is_wechat_url() {
 
 if [[ "$INPUT" =~ ^https?:// ]]; then
 
+    # ── Reject live streams before downloading anything ──────────────────────
+    # Live streams never end and would download indefinitely. Fail-open: only
+    # abort on a positive live detection; if status can't be determined, proceed.
+    LIVE_STATUS="$(yt-dlp --no-warnings --no-playlist --print "%(live_status)s" "$INPUT" 2>/dev/null | head -1)" || true
+    if [ "$LIVE_STATUS" = "is_live" ] || [ "$LIVE_STATUS" = "is_upcoming" ]; then
+        echo "❌ This is a LIVE stream (live_status: $LIVE_STATUS) — aborting before any download."
+        echo "   Live streams have no end and would download forever."
+        echo "   To capture a live stream, record a fixed-length clip first, then run:"
+        echo "     $0 ~/path/to/recording.mp4"
+        exit 1
+    fi
+
     if is_wechat_url "$INPUT"; then
         echo "💬 WeChat Channels URL detected — trying browser cookie method..."
         echo ""
@@ -58,7 +71,7 @@ if [[ "$INPUT" =~ ^https?:// ]]; then
         for BROWSER in chrome firefox safari edge; do
             if yt-dlp --no-playlist \
                       --cookies-from-browser "$BROWSER" \
-                      -o "%(title)s.%(ext)s" \
+                      -o "%(title).60s [%(id)s].%(ext)s" \
                       "$INPUT" 2>/dev/null; then
                 WECHAT_SUCCESS=true
                 break
@@ -83,7 +96,7 @@ if [[ "$INPUT" =~ ^https?:// ]]; then
         fi
     else
         echo "🌐 Downloading from URL..."
-        yt-dlp --no-playlist -o "%(title)s.%(ext)s" "$INPUT"
+        yt-dlp --no-playlist -o "%(title).60s [%(id)s].%(ext)s" "$INPUT"
     fi
 
     # Pick the most recently downloaded media file
@@ -119,8 +132,35 @@ else
     whisper-cli -m "$MODEL" -f "$AUDIO_FILE" -otxt -ovtt -l "$LANGUAGE"
 fi
 
+# ── Generate Markdown version ────────────────────────────────────────────────
+
+TXT_FILE="${AUDIO_FILE}.txt"
+MD_FILE="${VIDEO_FILE%.*}.md"
+TITLE="$(basename "${VIDEO_FILE%.*}")"
+TODAY="$(date '+%Y-%m-%d')"
+
+{
+    echo "# ${TITLE}"
+    echo ""
+    echo "- **来源 / Source**: ${SOURCE}"
+    echo "- **日期 / Date**: ${TODAY}"
+    echo "- **语言 / Language**: ${LANGUAGE}"
+    echo ""
+    echo "---"
+    echo ""
+    cat "$TXT_FILE"
+} > "$MD_FILE"
+
+# ── Sync Markdown to iCloud Drive (accessible from any device, incl. web) ─────
+
+ICLOUD_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Transcripts"
+mkdir -p "$ICLOUD_DIR"
+cp "$MD_FILE" "$ICLOUD_DIR/"
+
 echo ""
 echo "✅ Done!"
 echo "   📄 ${AUDIO_FILE}.txt  — plain text transcript"
 echo "   📄 ${AUDIO_FILE}.vtt  — transcript with timestamps"
+echo "   📝 ${MD_FILE}  — Markdown transcript"
+echo "   ☁️  ${ICLOUD_DIR}/$(basename "$MD_FILE")  — synced to iCloud"
 echo ""
